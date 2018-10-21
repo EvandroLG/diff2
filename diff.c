@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 
 #define LIMIT 100
 #define MAX_LINES 10
@@ -6,30 +8,39 @@
 int get_lines(char string[], char lines[][LIMIT]) {
     int c;
     int i = 0;
-    int j = 0;
+    int size_lines = 0;
     int k = 0;
 
     while ((c = string[i]) != 0) {
         if (c == '\n') {
-            j++;
+            lines[size_lines][k] = 0;
+            size_lines++;
             k = 0;
+        } else {
+            lines[size_lines][k] = c;
+            k++;
         }
 
-        lines[j][k] = c;
-
         i++;
-        k++;
     }
 
-    return j;
+    return size_lines;
 }
 
 void diff(char first_file[], char second_file[]) {
-    char lines_first_file[MAX_LINES][LIMIT];
-    get_lines(first_file, lines_first_file);
+    char lines_first[MAX_LINES][LIMIT];
+    int size = get_lines(first_file, lines_first);
 
-    char lines_second_file[MAX_LINES][LIMIT];
-    get_lines(second_file, lines_second_file);
+    char lines_second[MAX_LINES][LIMIT];
+    get_lines(second_file, lines_second);
+
+    for (int i = 0; i < size; i++) {
+        if (strcmp(lines_first[i], lines_second[i]) != 0) {
+            printf("line %i\n", (i+1));
+            printf("< %s\n", lines_first[i]);
+            printf("> %s\n", lines_second[i]);
+        }
+    }
 }
 
 void get_content(FILE *file, char file_content[]) {
